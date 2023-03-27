@@ -4,6 +4,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -27,6 +28,11 @@ var rootCmd = &cobra.Command{
 }
 
 func compareFiles(args []string) {
+
+	if len(args) != 2 {
+		log.Fatal("You must enter exactly two inputs to run the program \n Number of inputs you are trying to enter:", len(args))
+	}
+
 	for i, s := range args {
 		if !strings.Contains(s, ".json") {
 			var sb strings.Builder
