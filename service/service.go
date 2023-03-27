@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"path/filepath"
 	"reflect"
 	"strings"
 
@@ -41,8 +42,8 @@ func findDiff(path string, obj1 interface{}, obj2 interface{}) []string {
 	v1 := reflect.ValueOf(obj1)
 	v2 := reflect.ValueOf(obj2)
 
-	firstInp := conf.FirstInput
-	secInp := conf.SecondInput
+	firstInp := filepath.Base(conf.FirstInput)
+	secInp := filepath.Base(conf.SecondInput)
 
 	var diffs []string
 
