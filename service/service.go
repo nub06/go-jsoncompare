@@ -31,7 +31,6 @@ func compare(obj1 interface{}, obj2 interface{}) []string {
 		diffList = append(diffList, "JSONs are equal")
 	} else {
 		diff := findDiff("", obj1, obj2)
-		diffList = append(diffList, "JSONS are different \n")
 		diffList = append(diffList, diff...)
 	}
 
@@ -41,7 +40,6 @@ func compare(obj1 interface{}, obj2 interface{}) []string {
 func findDiff(path string, obj1 interface{}, obj2 interface{}) []string {
 	v1 := reflect.ValueOf(obj1)
 	v2 := reflect.ValueOf(obj2)
-
 	firstInp := filepath.Base(conf.FirstInput)
 	secInp := filepath.Base(conf.SecondInput)
 
@@ -52,7 +50,7 @@ func findDiff(path string, obj1 interface{}, obj2 interface{}) []string {
 		if string(firstChar) == "." {
 			path = strings.TrimPrefix(path, string(path[0]))
 		}
-		res := fmt.Sprintf("%v Types are different: %v is %v %v is %v\n", path, (v1), v1.Kind(), (v2), v2.Kind())
+		res := fmt.Sprintf("Types are different: %v=%v type is %v on %v %v=%v type is %v on %v\n", path, (v1), v1.Kind(), firstInp, path, (v2), v2.Kind(), secInp)
 		diffs = append(diffs, res)
 
 	}
@@ -69,13 +67,13 @@ func findDiff(path string, obj1 interface{}, obj2 interface{}) []string {
 				if string(firstChar) == "." {
 					newPath = strings.TrimPrefix(newPath, string(newPath[0]))
 				}
-				if !strings.Contains(newPath, ".") {
+				if !strings.Contains(path, ".") {
 
-					res := fmt.Sprintf("Group: %s is missing from %s \n", newPath, firstInp)
+					res := fmt.Sprintf("Group is missing: %s is missing from %s \n", newPath, secInp)
 					diffs = append(diffs, res)
 
 				} else {
-					res := fmt.Sprintf("Key: %s is missing from %s \n", newPath, secInp)
+					res := fmt.Sprintf("Key is missing: %s is missing from %s \n", newPath, secInp)
 					diffs = append(diffs, res)
 				}
 
@@ -93,12 +91,12 @@ func findDiff(path string, obj1 interface{}, obj2 interface{}) []string {
 				if string(firstChar) == "." {
 					newPath = strings.TrimPrefix(newPath, string(newPath[0]))
 				}
-				if !strings.Contains(newPath, ".") {
+				if !strings.Contains(path, ".") {
 
-					res := fmt.Sprintf("Group: %s is missing from %s \n", newPath, firstInp)
+					res := fmt.Sprintf("Group is missing: %s is missing from %s \n", newPath, firstInp)
 					diffs = append(diffs, res)
 				} else {
-					res := fmt.Sprintf("Key: %s is missing from %s \n", newPath, secInp)
+					res := fmt.Sprintf("Key is missing: %s is missing from %s \n", newPath, firstInp)
 					diffs = append(diffs, res)
 				}
 
@@ -110,44 +108,10 @@ func findDiff(path string, obj1 interface{}, obj2 interface{}) []string {
 			if string(firstChar) == "." {
 				path = strings.TrimPrefix(path, string(path[0]))
 			}
-			res := fmt.Sprintf("%s Values are different: on %s value is %v on %s value is %v\n", path, firstInp, obj1, secInp, obj2)
+			res := fmt.Sprintf("Values are different: %s=%v on %s %s=%v on %s\n", path, obj1, firstInp, path, obj2, secInp)
 			diffs = append(diffs, res)
 		}
-
-		if v1.Kind() == reflect.Map {
-			for _, key := range v1.MapKeys() {
-				val1 := v1.MapIndex(key)
-				val2 := v2.MapIndex(key)
-				if !val2.IsValid() {
-					keyValue := fmt.Sprintf("%v", key.Interface())
-					newPath := fmt.Sprintf("%s.%s", path, keyValue)
-					firstChar := newPath[0]
-					if string(firstChar) == "." {
-						newPath = strings.TrimPrefix(newPath, string(newPath[0]))
-					}
-					res := fmt.Sprintf("%s is missing from %s\n", newPath, secInp)
-					diffs = append(diffs, res)
-					continue
-				}
-				keyValue := fmt.Sprintf("%v", key.Interface())
-				newPath := fmt.Sprintf("%s.%s", path, keyValue)
-				subDiffs := findDiff(newPath, val1.Interface(), val2.Interface())
-				diffs = append(diffs, subDiffs...)
-			}
-			for _, key := range v2.MapKeys() {
-				if !v1.MapIndex(key).IsValid() {
-					keyValue := fmt.Sprintf("%v", key.Interface())
-					newPath := fmt.Sprintf("%s.%s", path, keyValue)
-					firstChar := newPath[0]
-					if string(firstChar) == "." {
-						newPath = strings.TrimPrefix(newPath, string(newPath[0]))
-					}
-					res := fmt.Sprintf("%s is missing from %s\n", newPath, firstInp)
-					diffs = append(diffs, res)
-				}
-			}
-		}
-
 	}
+
 	return diffs
 }
