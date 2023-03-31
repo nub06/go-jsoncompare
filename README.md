@@ -1,4 +1,4 @@
-# go-json-compare
+# go-jsoncompare
 
 # Installation
 
