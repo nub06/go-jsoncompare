@@ -19,6 +19,7 @@ var rootCmd = &cobra.Command{
 	Short: "Compares two files and displays the differences",
 	Long: `It is used to compare two files and display the differences between them. The command takes two file paths as input arguments and usage of using input:
 	e.g. "go-jsoncompare file1 file2"`,
+	Args:  cobra.ExactArgs(2),
 
 	Run: func(cmd *cobra.Command, args []string) {
 
